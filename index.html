@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0B0D">
+<meta name="robots" content="noindex">
+<title>Dijital Kartvizit</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600&family=Marcellus&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  colors: { gece:'#0B0B0D', fildisi:'#EDE9E3', mute:'#8B8781' },
+  fontFamily: { display:['Marcellus','Georgia','serif'], sans:['Karla','system-ui','sans-serif'] }
+}}}
+</script>
+
+<style>
+  :root{ --marka:#C9AE78; --bosluk:clamp(14px,3vh,30px); }
+  html,body{height:100%}
+  body{background:#0B0B0D;-webkit-tap-highlight-color:transparent}
+
+  .fon{position:fixed;inset:0;z-index:-1;overflow:hidden;background:#0B0B0D}
+  .fon::before,.fon::after{content:"";position:absolute;border-radius:50%;filter:blur(90px);
+    background:var(--marka);transition:background .5s}
+  .fon::before{width:64vmax;height:64vmax;left:-24vmax;top:-26vmax;opacity:.17}
+  .fon::after{width:48vmax;height:48vmax;right:-20vmax;bottom:-22vmax;opacity:.10}
+  .grain{position:absolute;inset:0;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  .cam{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.075);
+    backdrop-filter:blur(24px) saturate(140%);-webkit-backdrop-filter:blur(24px) saturate(140%);
+    box-shadow:0 32px 80px -34px rgba(0,0,0,.95)}
+  .icerik{display:flex;flex:1;flex-direction:column;justify-content:center;gap:var(--bosluk)}
+
+  .ikon-btn{display:grid;place-items:center;width:38px;height:38px;border-radius:999px;
+    border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);color:#EDE9E3;
+    transition:background .2s,color .2s,border-color .2s}
+  .ikon-btn:hover{background:rgba(255,255,255,.09);color:var(--marka);border-color:var(--marka)}
+  .ikon-btn:active{transform:scale(.94)}
+
+  .logo{width:clamp(74px,14vh,102px);height:clamp(74px,14vh,102px);border-radius:999px;
+    display:grid;place-items:center;overflow:hidden;background:rgba(255,255,255,.05);
+    border:1px solid color-mix(in srgb,var(--marka) 45%,transparent);
+    box-shadow:0 0 0 8px rgba(255,255,255,.02),0 18px 44px -18px color-mix(in srgb,var(--marka) 65%,transparent)}
+  .logo img{width:100%;height:100%;object-fit:cover}
+  .logo .bas-harf{font-family:Marcellus,Georgia,serif;font-size:clamp(24px,3.9vh,30px);color:var(--marka)}
+
+  .ayrac{display:flex;align-items:center;gap:8px;width:118px;margin:0 auto}
+  .ayrac span{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent)}
+  .elmas{width:4px;height:4px;flex:none;transform:rotate(45deg);background:var(--marka)}
+
+  .serit{display:grid;grid-template-columns:repeat(3,1fr);border-radius:999px;overflow:hidden;
+    border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03)}
+  .serit>a{display:flex;flex-direction:column;align-items:center;gap:7px;
+    padding:clamp(12px,2vh,17px) 4px;color:#EDE9E3;transition:background .2s,color .2s}
+  .serit>a+a{border-left:1px solid rgba(255,255,255,.09)}
+  .serit>a:hover{background:rgba(255,255,255,.07);color:var(--marka)}
+  .serit>a:active{background:rgba(255,255,255,.11)}
+  .serit .etiket{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase}
+
+  .detay{border:1px solid rgba(255,255,255,.09);border-radius:22px;overflow:hidden;
+    background:rgba(255,255,255,.035);
+    backdrop-filter:blur(18px) saturate(130%);-webkit-backdrop-filter:blur(18px) saturate(130%)}
+  .detay a{display:flex;align-items:flex-start;gap:13px;padding:clamp(11px,1.8vh,15px) 15px;transition:background .2s}
+  .detay a+a{border-top:1px solid rgba(255,255,255,.075)}
+  .detay a:hover{background:rgba(255,255,255,.05)}
+  .detay .baslik{font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:#8B8781}
+  .detay .deger{font-size:14px;color:#EDE9E3;margin-top:3px;line-height:1.45}
+
+  /* Yükleniyor */
+  .halka{width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.10);
+    border-top-color:var(--marka);animation:don .9s linear infinite}
+  @keyframes don{to{transform:rotate(360deg)}}
+  .nefes{animation:nefes 1.8s ease-in-out infinite}
+  @keyframes nefes{0%,100%{opacity:.45}50%{opacity:1}}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+    background:rgba(20,20,23,.95);border:1px solid rgba(255,255,255,.12);color:#EDE9E3;
+    padding:10px 18px;border-radius:999px;font-size:12.5px;backdrop-filter:blur(12px);
+    transition:opacity .25s,transform .25s;z-index:50}
+  .toast.acik{opacity:1;transform:translate(-50%,0)}
+
+  .rise{opacity:0;transform:translateY(10px);animation:rise .6s cubic-bezier(.2,.7,.3,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  :focus-visible{outline:2px solid var(--marka);outline-offset:3px}
+  @media (prefers-reduced-motion:reduce){
+    .rise{opacity:1;transform:none;animation:none}
+    .nefes{animation:none}
+    *{transition:none!important}
+  }
+</style>
+</head>
+
+<body class="font-sans text-fildisi antialiased">
+
+<div class="fon"><div class="grain"></div></div>
+
+<svg width="0" height="0" class="hidden" aria-hidden="true"><defs>
+  <symbol id="i-kisi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 20v-1.6a3.6 3.6 0 0 0-3.6-3.6H6.6A3.6 3.6 0 0 0 3 18.4V20"/><circle cx="9.2" cy="7.4" r="3.4"/><path d="M19 7.5v6M22 10.5h-6"/></symbol>
+  <symbol id="i-paylas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5.2" r="2.8"/><circle cx="6" cy="12" r="2.8"/><circle cx="18" cy="18.8" r="2.8"/><path d="m8.4 10.7 7.2-4.2M8.4 13.3l7.2 4.2"/></symbol>
+  <symbol id="i-tel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.47-2.4-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.53.14-.17.19-.3.29-.5.1-.19.05-.37-.03-.52-.07-.15-.66-1.6-.91-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.03 1.02-1.03 2.48 0 1.46 1.06 2.87 1.21 3.07.15.2 2.1 3.2 5.08 4.49.7.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.18-1.42-.08-.12-.28-.2-.57-.34M12.05 21.79h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.88 9.88m8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.9 11.9 0 0 0 5.69 1.44c6.55 0 11.89-5.33 11.89-11.89 0-3.18-1.24-6.16-3.48-8.4"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10.5c0 5.3-8 12-8 12s-8-6.7-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10.3" r="2.8"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><rect x="2.6" y="4.9" width="18.8" height="14.2" rx="3.6"/><path d="m3.6 7.6 7.3 5.1a2 2 0 0 0 2.2 0l7.3-5.1"/></symbol>
+  <symbol id="i-uyari" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M12 7.6v5.2M12 16.3h.01"/></symbol>
+</defs></svg>
+
+<!-- ===================== YÜKLENİYOR ===================== -->
+<div id="yukleniyor" class="flex flex-col items-center justify-center gap-5 px-8" style="min-height:100svh">
+  <div class="halka"></div>
+  <p class="nefes text-[11px] uppercase tracking-[.28em] text-mute">Yükleniyor</p>
+</div>
+
+<!-- ===================== KART ===================== -->
+<main id="kart" class="mx-auto hidden w-full max-w-[430px] px-3 py-3" style="min-height:100svh">
+  <div class="cam flex min-h-[calc(100svh-24px)] flex-col rounded-[30px] px-5 pb-5 pt-4">
+
+    <div class="rise flex items-center justify-end gap-2">
+      <button id="btn-vcf" type="button" class="ikon-btn" aria-label="Rehbere ekle" title="Rehbere ekle">
+        <svg class="h-[17px] w-[17px]"><use href="#i-kisi"/></svg>
+      </button>
+      <button id="btn-paylas" type="button" class="ikon-btn" aria-label="Kartı paylaş" title="Kartı paylaş">
+        <svg class="h-[16px] w-[16px]"><use href="#i-paylas"/></svg>
+      </button>
+    </div>
+
+    <div class="icerik">
+
+      <header class="rise flex flex-col items-center text-center" style="animation-delay:.05s">
+        <div id="logo" class="logo"></div>
+        <h1 id="isim" class="mt-[clamp(15px,2.4vh,24px)] font-display uppercase leading-[1.15] tracking-[.13em]"
+            style="font-size:clamp(23px,6.2vw,30px)"></h1>
+        <p id="konum" class="mt-2 text-[12.5px] tracking-[.06em] text-mute"></p>
+      </header>
+
+      <div class="ayrac rise" style="animation-delay:.09s"><span></span><i class="elmas"></i><span></span></div>
+
+      <nav class="serit rise" style="animation-delay:.13s" aria-label="Hızlı aksiyonlar">
+        <a id="ey-ara" href="#">
+          <svg class="h-[18px] w-[18px]"><use href="#i-tel"/></svg>
+          <span class="etiket">Hemen Ara</span>
+        </a>
+        <a id="ey-wa" href="#" target="_blank" rel="noopener">
+          <svg class="h-[18px] w-[18px]"><use href="#i-wa"/></svg>
+          <span class="etiket">WhatsApp</span>
+        </a>
+        <a id="ey-harita" href="#" target="_blank" rel="noopener">
+          <svg class="h-[18px] w-[18px]"><use href="#i-pin"/></svg>
+          <span class="etiket">Yol Tarifi</span>
+        </a>
+      </nav>
+
+      <section class="detay rise" style="animation-delay:.18s">
+        <a id="sat-tel" href="#">
+          <svg class="mt-[3px] h-[15px] w-[15px] shrink-0" style="color:var(--marka)"><use href="#i-tel"/></svg>
+          <span class="min-w-0 flex-1">
+            <span class="baslik block">Telefon</span>
+            <span id="d-tel" class="deger block"></span>
+          </span>
+        </a>
+        <a id="sat-eposta" href="#">
+          <svg class="mt-[3px] h-[15px] w-[15px] shrink-0" style="color:var(--marka)"><use href="#i-mail"/></svg>
+          <span class="min-w-0 flex-1">
+            <span class="baslik block">E-posta</span>
+            <span id="d-eposta" class="deger block truncate"></span>
+          </span>
+        </a>
+        <a id="sat-adres" href="#" target="_blank" rel="noopener">
+          <svg class="mt-[3px] h-[15px] w-[15px] shrink-0" style="color:var(--marka)"><use href="#i-pin"/></svg>
+          <span class="min-w-0 flex-1">
+            <span class="baslik block">Adres</span>
+            <span id="d-adres" class="deger block"></span>
+          </span>
+        </a>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<!-- ===================== HATA ===================== -->
+<section id="hata" class="mx-auto hidden w-full max-w-[430px] flex-col items-center justify-center px-8 text-center" style="min-height:100svh">
+  <div class="grid h-14 w-14 place-items-center rounded-full border border-white/10 bg-white/5 text-mute">
+    <svg class="h-6 w-6"><use href="#i-uyari"/></svg>
+  </div>
+  <h1 id="hata-baslik" class="mt-6 font-display text-[23px] uppercase tracking-[.14em]"></h1>
+  <p id="hata-metin" class="mt-3 text-[13.5px] leading-relaxed text-mute"></p>
+  <p id="hata-kod" class="mt-4 hidden rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[11.5px] text-mute" style="font-family:ui-monospace,monospace"></p>
+</section>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   AYARLAR
+   ---------------------------------------------------------------------
+   CSV_URL: E-Tablo > Dosya > Paylaş > Web'de yayınla > CSV
+   Örnek biçim:
+     https://docs.google.com/spreadsheets/d/e/2PACX-XXXXXXXX/pub?gid=0&single=true&output=csv
+   Code.gs'teki "2. Bağlantıları Göster" penceresindeki bağlantılar da çalışır.
+   ===================================================================== */
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTApuwEQq8oK7F5pQFZuZRRu93RDWretkyl364ae-z96XKOVHNuQFYEDX_iomHIqH8CUYr3lN-1IdhM/pub?output=csv';
+
+const VARSAYILAN_MARKA = '#C9AE78';
+const ULKE_KODU        = '90';
+const WA_MESAJI        = 'Merhaba, kartvizitiniz üzerinden yazıyorum.';
+
+
+(() => {
+  'use strict';
+  const $ = s => document.querySelector(s);
+
+  /* ---------------- CSV ayrıştırıcı (RFC 4180) ----------------
+     Adres alanı virgül içerdiği için Google onu tırnağa alır;
+     basit split(',') bu yüzden kullanılamaz.                     */
+  function csvAyristir(metin) {
+    const satirlar = [];
+    let alan = '', satir = [], tirnakta = false;
+
+    for (let i = 0; i < metin.length; i++) {
+      const k = metin[i];
+      if (tirnakta) {
+        if (k === '"') {
+          if (metin[i + 1] === '"') { alan += '"'; i++; }
+          else tirnakta = false;
+        } else alan += k;
+      } else if (k === '"') {
+        tirnakta = true;
+      } else if (k === ',') {
+        satir.push(alan); alan = '';
+      } else if (k === '\n') {
+        satir.push(alan); satirlar.push(satir); satir = []; alan = '';
+      } else if (k !== '\r') {
+        alan += k;
+      }
+    }
+    if (alan !== '' || satir.length) { satir.push(alan); satirlar.push(satir); }
+    return satirlar.filter(s => s.some(h => String(h).trim() !== ''));
+  }
+
+  // 'Marka Rengi', 'MARKARENGI', 'MarkaRengi' → 'markarengi'
+  const anahtar = s => String(s).toLowerCase()
+    .replace(/ı/g, 'i').replace(/ğ/g, 'g').replace(/ü/g, 'u')
+    .replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .replace(/[^a-z0-9]/g, '');
+
+  function tabloyaCevir(satirlar) {
+    if (!satirlar.length) return [];
+    const basliklar = satirlar[0].map(anahtar);
+    return satirlar.slice(1).map(satir => {
+      const kayit = {};
+      basliklar.forEach((b, i) => { kayit[b] = (satir[i] || '').trim(); });
+      return kayit;
+    });
+  }
+
+  /* ---------------- Yardımcılar ---------------- */
+  const rakam = t => String(t || '').replace(/\D/g, '');
+
+  const e164 = s => {
+    let d = rakam(s);
+    if (!d) return '';
+    if (!String(s).trim().startsWith('+')) {
+      if (d.startsWith('0')) d = d.slice(1);
+      if (!d.startsWith(ULKE_KODU)) d = ULKE_KODU + d;
+    }
+    return '+' + d;
+  };
+
+  const gecerliHex = h => /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(String(h).trim());
+
+  const basHarfler = isim => String(isim).trim().split(/\s+/)
+    .slice(0, 2).map(k => k.charAt(0)).join('').toUpperCase() || '?';
+
+  const slug = s => String(s).toLowerCase()
+    .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+    .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  let toastZaman;
+  const toast = mesaj => {
+    const t = $('#toast');
+    t.textContent = mesaj;
+    t.classList.add('acik');
+    clearTimeout(toastZaman);
+    toastZaman = setTimeout(() => t.classList.remove('acik'), 2400);
+  };
+
+  const hataGoster = (baslik, metin, kod) => {
+    $('#yukleniyor').classList.add('hidden');
+    $('#kart').classList.add('hidden');
+    $('#hata-baslik').textContent = baslik;
+    $('#hata-metin').textContent = metin;
+    if (kod) { $('#hata-kod').textContent = kod; $('#hata-kod').classList.remove('hidden'); }
+    $('#hata').classList.remove('hidden');
+    $('#hata').classList.add('flex');
+  };
+
+  /* ---------------- Akış ---------------- */
+  const kimlik = (new URLSearchParams(location.search).get('id') || '').trim().toLowerCase();
+
+  if (!kimlik) {
+    hataGoster('Kart kimliği eksik', 'Bağlantıda ?id= parametresi yok. NFC kartı yeniden okutun.');
+    return;
+  }
+  if (!CSV_URL || CSV_URL === 'BURAYA_CSV_LINKINI_YAPISTIRIN') {
+    hataGoster('Yapılandırma eksik', 'index.html içindeki CSV_URL değerini doldurun.');
+    return;
+  }
+
+  fetch(CSV_URL, { redirect: 'follow' })
+    .then(yanit => {
+      if (!yanit.ok) throw new Error('HTTP ' + yanit.status);
+      return yanit.text();
+    })
+    .then(metin => {
+      const satirlar = csvAyristir(metin);
+
+      // Yayınlanan sayfa yanlışsa (örn. boş "Sayfa1") ID sütunu hiç gelmez
+      if (!satirlar.length || satirlar[0].map(anahtar).indexOf('id') === -1) {
+        hataGoster('Yanlış sayfa yayınlanmış',
+          'Gelen CSV çıktısında ID sütunu yok. E-Tabloda Dosya > Paylaş > Web\'de yayınla ' +
+          'ekranını açıp "Tüm belge" yerine "Veriler" sayfasını seçin.');
+        return;
+      }
+
+      const kayitlar = tabloyaCevir(satirlar);
+
+      // Aynı ID birden fazla kez girilmişse en son satır geçerlidir
+      const eslesenler = kayitlar.filter(k => (k.id || '').toLowerCase() === kimlik);
+      const kayit = eslesenler[eslesenler.length - 1];
+
+      if (!kayit) {
+        hataGoster('İşletme bulunamadı',
+                   'Bu kimlik tabloda kayıtlı değil. Bağlantıyı kontrol edin.', '?id=' + kimlik);
+        return;
+      }
+      kartiKur(kayit);
+    })
+    .catch(e => {
+      hataGoster('Veri alınamadı',
+                 'CSV bağlantısına ulaşılamadı. Tablonun paylaşım ayarını ve bağlantıyı kontrol edin.',
+                 String(e.message || e));
+    });
+
+  /* ---------------- Kartı doldur ---------------- */
+  function kartiKur(k) {
+    const isim   = k.isim   || '';
+    const konum  = k.konum  || '';
+    const tel    = e164(k.telefon);
+    const waHam  = k.whatsapp && k.whatsapp.trim() ? k.whatsapp : k.telefon;   // boşsa telefon
+    const wa     = rakam(e164(waHam));
+    const harita = k.adres
+      ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(k.adres)
+      : '';
+
+    /* Marka rengi */
+    const marka = gecerliHex(k.markarengi) ? k.markarengi.trim() : VARSAYILAN_MARKA;
+    document.documentElement.style.setProperty('--marka', marka);
+
+    document.title = isim ? isim + ' · Dijital Kartvizit' : 'Dijital Kartvizit';
+
+    /* Logo */
+    $('#logo').innerHTML = k.logo
+      ? '<img alt="">'
+      : '<span class="bas-harf">' + basHarfler(isim) + '</span>';
+    if (k.logo) {
+      const gorsel = $('#logo img');
+      gorsel.onerror = () => {
+        $('#logo').innerHTML = '<span class="bas-harf">' + basHarfler(isim) + '</span>';
+      };
+      gorsel.src = k.logo;
+    }
+
+    $('#isim').textContent  = isim;
+    $('#konum').textContent = konum;
+
+    const bagla = (sec, href, deger) => {
+      const el = $(sec);
+      if (!el) return;
+      if (!href) { el.classList.add('hidden'); return; }
+      el.href = href;
+      const alan = el.querySelector('.deger');
+      if (alan && deger) alan.textContent = deger;
+    };
+
+    bagla('#ey-ara',    tel ? 'tel:' + tel : '');
+    bagla('#ey-wa',     wa ? 'https://wa.me/' + wa + '?text=' + encodeURIComponent(WA_MESAJI) : '');
+    bagla('#ey-harita', harita);
+
+    bagla('#sat-tel',    tel ? 'tel:' + tel : '', k.telefon);
+    bagla('#sat-eposta', k.eposta ? 'mailto:' + k.eposta : '', k.eposta);
+    bagla('#sat-adres',  harita, k.adres);
+
+    $('#yukleniyor').classList.add('hidden');
+    $('#kart').classList.remove('hidden');
+
+    /* ---- Rehbere ekle: .vcf anlık üretilir ---- */
+    const esc = v => String(v || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;')
+                                    .replace(/,/g, '\\,').replace(/\n/g, '\\n');
+    const waTel = e164(waHam);
+
+    const vcard = [
+      'BEGIN:VCARD', 'VERSION:3.0',
+      'N:;' + esc(isim) + ';;;',
+      'FN:' + esc(isim),
+      'ORG:' + esc(isim),
+      tel ? 'TEL;TYPE=WORK,VOICE:' + tel : null,
+      waTel && waTel !== tel ? 'TEL;TYPE=CELL:' + waTel : null,
+      k.eposta ? 'EMAIL;TYPE=INTERNET,WORK:' + k.eposta : null,
+      k.adres  ? 'ADR;TYPE=WORK:;;' + esc(k.adres) + ';;;;' : null,
+      konum ? 'NOTE:' + esc(isim + ' · ' + konum) : null,
+      'END:VCARD'
+    ].filter(Boolean).join('\r\n');
+
+    $('#btn-vcf').addEventListener('click', async () => {
+      const dosyaAdi = (slug(isim) || 'kartvizit') + '.vcf';
+      const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
+
+      // iOS: paylaşım sayfası doğrudan "Kişilere Ekle" seçeneği sunar
+      try {
+        const dosya = new File([blob], dosyaAdi, { type: 'text/vcard' });
+        if (navigator.canShare && navigator.canShare({ files: [dosya] })) {
+          await navigator.share({ files: [dosya] });
+          return;
+        }
+      } catch (e) { if (e && e.name === 'AbortError') return; }
+
+      const url = URL.createObjectURL(blob);
+      const a = Object.assign(document.createElement('a'), { href: url, download: dosyaAdi });
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+      toast('Kartvizit indirildi');
+    });
+
+    /* ---- Paylaş: Web Share API ---- */
+    $('#btn-paylas').addEventListener('click', async () => {
+      const veri = { title: isim, text: konum ? isim + ' — ' + konum : isim, url: location.href };
+      if (navigator.share) {
+        try { await navigator.share(veri); }
+        catch (e) { if (e && e.name !== 'AbortError') toast('Paylaşım açılamadı'); }
+        return;
+      }
+      try { await navigator.clipboard.writeText(location.href); toast('Bağlantı kopyalandı'); }
+      catch (e) { toast(location.href); }
+    });
+  }
+})();
+</script>
+</body>
+</html>
