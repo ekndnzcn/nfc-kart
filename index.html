@@ -357,8 +357,11 @@ const WA_MESAJI        = 'Merhaba, kartvizitiniz üzerinden yazıyorum.';
     const tel    = e164(k.telefon);
     const waHam  = k.whatsapp && k.whatsapp.trim() ? k.whatsapp : k.telefon;   // boşsa telefon
     const wa     = rakam(e164(waHam));
-    const harita = k.adres
-      ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(k.adres)
+    const adresVerisi = (k.adres || '').trim();
+    const harita = adresVerisi
+      ? (adresVerisi.startsWith('http')
+         ? adresVerisi
+         : 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(adresVerisi))
       : '';
 
     /* Marka rengi */
